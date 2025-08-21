@@ -109,22 +109,10 @@ jobs:
 
           echo "All patches applied successfully."
 
-      - name: Set Zig Version
-        id: zig_version
-        run: |
-          case "${{ matrix.target }}" in
-            arm-linux-musleabihf|armeb-linux-musleabihf|s390x-linux-musl)
-              echo "version=0.15.0-dev.137+db7db4802" >> $GITHUB_OUTPUT
-              ;;
-            *)
-              echo "version=0.15.0-dev.300+9e21ba12d" >> $GITHUB_OUTPUT
-              ;;
-          esac
-
       - name: Setup Zig
         uses: mlugg/setup-zig@v2
         with:
-          version: "${{ steps.zig_version.outputs.version }}"
+          version: "0.15.1"
           use-cache: false
         
       - name: Setup Zig toolchain
@@ -140,8 +128,8 @@ jobs:
           TOOLCHAIN=${PWD}/zig-as-llvm
           export CC=${TOOLCHAIN}/bin/cc
           export CXX=${TOOLCHAIN}/bin/c++
-          export CFLAGS="-fstack-protector-strong -fsanitize=undefined"
-          export CXXFLAGS="-fstack-protector-strong -fsanitize=undefined"
+          export CFLAGS="-fstack-protector-strong"
+          export CXXFLAGS="-fstack-protector-strong"
           export LD=${TOOLCHAIN}/bin/ld
           export OBJCOPY=${TOOLCHAIN}/bin/objcopy
           export AR=${TOOLCHAIN}/bin/ar
@@ -236,8 +224,8 @@ jobs:
             -DCMAKE_AR="${TOOLCHAIN}/bin/ar" \
             -DCMAKE_RANLIB="${TOOLCHAIN}/bin/ranlib" \
             -DCMAKE_STRIP="${TOOLCHAIN}/bin/strip" \
-            -DCMAKE_C_FLAGS="-fstack-protector-strong -fsanitize=undefined -static" \
-            -DCMAKE_CXX_FLAGS="-fstack-protector-strong -fsanitize=undefined -static" \
+            -DCMAKE_C_FLAGS="-fstack-protector-strong -static" \
+            -DCMAKE_CXX_FLAGS="-fstack-protector-strong -static" \
             -DCMAKE_EXE_LINKER_FLAGS="-static" \
             -DLLVM_ENABLE_PROJECTS="${{inputs.projects}}" \
             -DLLVM_ENABLE_ZLIB=FORCE_ON \
