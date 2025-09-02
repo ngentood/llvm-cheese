@@ -128,8 +128,8 @@ jobs:
           TOOLCHAIN=${PWD}/zig-as-llvm
           export CC=${TOOLCHAIN}/bin/cc
           export CXX=${TOOLCHAIN}/bin/c++
-          export CFLAGS="-fstack-protector-strong"
-          export CXXFLAGS="-fstack-protector-strong"
+          export CFLAGS="-fstack-protector-strong -fsanitize=undefined"
+          export CXXFLAGS="-fstack-protector-strong -fsanitize=undefined"
           export LD=${TOOLCHAIN}/bin/ld
           export OBJCOPY=${TOOLCHAIN}/bin/objcopy
           export AR=${TOOLCHAIN}/bin/ar
@@ -226,8 +226,8 @@ jobs:
             -DCMAKE_AR="${TOOLCHAIN}/bin/ar" \
             -DCMAKE_RANLIB="${TOOLCHAIN}/bin/ranlib" \
             -DCMAKE_STRIP="${TOOLCHAIN}/bin/strip" \
-            -DCMAKE_C_FLAGS="-fstack-protector-strong -static" \
-            -DCMAKE_CXX_FLAGS="-fstack-protector-strong -static" \
+            -DCMAKE_C_FLAGS="-fstack-protector-strong -fsanitize=undefined -static" \
+            -DCMAKE_CXX_FLAGS="-fstack-protector-strong -fsanitize=undefined -static" \
             -DCMAKE_EXE_LINKER_FLAGS="-static" \
             -DLLVM_ENABLE_PROJECTS="${{inputs.projects}}" \
             -DLLVM_ENABLE_ZLIB=FORCE_ON \
