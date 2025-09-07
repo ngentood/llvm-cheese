@@ -5,7 +5,7 @@ on:
     inputs:
       version:
         description: "NDK Release version:"
-        default: "29-beta3"
+        default: "29-beta4"
         required: true
       projects:
         description: "Projects to build:"
@@ -62,7 +62,9 @@ jobs:
           ANDROID_REV=$(grep 'llvm_android/+/.*' "$CLANG_SOURCE_INFO" | sed -n 's/.*llvm_android\/\+//; s/\/patches.*//p' | sed 's/\/\+//g; s/^\+//g' | head -n 1)
 
           if [[ "${{inputs.version}}" == "29-beta3" ]]; then
-            ANDROID_REV="d113e48090fad0f0ab54ab8a32eb118a41867fce"
+            ANDROID_REV="0d60a8c3cafd4371270eab5a50a9f753606810ba"
+          elif [[ "${{inputs.version}}" == "29-beta4" ]]; then
+            ANDROID_REV="1dab3288f660d43a6cb2479107e2b54b3ab0a2a1"
           fi
 
           if [[ -z "$LLVM_VERSION" || -z "$LLVM_REV" || -z "$ANDROID_REV" ]]; then
