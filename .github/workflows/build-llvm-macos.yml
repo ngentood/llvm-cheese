@@ -1,4 +1,4 @@
-name: Build LLVM (BSD)
+name: Build LLVM (macOS)
 run-name: Build LLVM for r${{inputs.version}} ${{inputs.projects}}
 on:
   workflow_dispatch:
@@ -22,8 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # arm-freebsd-eabihf
-        target: [aarch64-freebsd-none, powerpc64-freebsd-none, powerpc64le-freebsd-none, riscv64-freebsd-none, x86_64-freebsd-none, aarch64-netbsd-none, aarch64_be-netbsd-none, arm-netbsd-eabi, arm-netbsd-eabihf, armeb-netbsd-eabi, armeb-netbsd-eabihf, mips-netbsd-eabi, mips-netbsd-eabihf, mipsel-netbsd-eabi, mipsel-netbsd-eabihf, powerpc-netbsd-eabi, powerpc-netbsd-eabihf, x86-netbsd-none, x86_64-netbsd-none]
+        target: [aarch64-macos-none, x86_64-macos-none]
     runs-on: ubuntu-24.04
     env:
       ROOTDIR: ${{github.workspace}}
@@ -91,13 +90,6 @@ jobs:
           done
 
           rm -rf "$ROOTDIR/../llvm_android"
-
-          if [ -d "$ROOTDIR/patches/musl/llvm/$LLVM_VERSION" ]; then
-            for PATCH in $ROOTDIR/patches/musl/llvm/$LLVM_VERSION/*.patch; do
-              echo "Applying $(basename "$PATCH")..."
-              git apply "$PATCH"
-            done
-          fi
 
           for PATCH in $ROOTDIR/patches/global/llvm/$LLVM_VERSION/*.patch; do
             echo "Applying $(basename "$PATCH")..."
@@ -209,13 +201,7 @@ jobs:
             -DLLVM_TARGETS_TO_BUILD="X86;AArch64;ARM;RISCV" \
             -DCMAKE_BUILD_TYPE=MinSizeRel \
             -DCMAKE_CROSSCOMPILING=True \
-            -DCMAKE_SYSTEM_NAME=$( \
-               field=$(echo "$ZIG_TARGET" | cut -d- -f2); \
-               first=${field:0:1}; \
-               middle=${field:1:${#field}-4}; \
-               last=${field: -3}; \
-               echo "$(tr '[:lower:]' '[:upper:]' <<<"$first")$middle$(tr '[:lower:]' '[:upper:]' <<<"$last")" \
-             ) \
+            -DCMAKE_SYSTEM_NAME=Darwin \
             -DLLVM_DEFAULT_TARGET_TRIPLE=${{matrix.target}} \
             -DCMAKE_C_COMPILER="${TOOLCHAIN}/bin/cc" \
             -DCMAKE_CXX_COMPILER="${TOOLCHAIN}/bin/c++" \
