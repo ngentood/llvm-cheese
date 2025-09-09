@@ -211,7 +211,13 @@ jobs:
             -DLLVM_TARGETS_TO_BUILD="X86;AArch64;ARM;RISCV" \
             -DCMAKE_BUILD_TYPE=MinSizeRel \
             -DCMAKE_CROSSCOMPILING=True \
-            -DCMAKE_SYSTEM_NAME=$(echo "${ZIG_TARGET}" | cut -d- -f2) \
+            -DCMAKE_SYSTEM_NAME=$( \
+               field=$(echo "$ZIG_TARGET" | cut -d- -f2); \
+               first=${field:0:1}; \
+               middle=${field:1:${#field}-4}; \
+               last=${field: -3}; \
+               echo "$(tr '[:lower:]' '[:upper:]' <<<"$first")$middle$(tr '[:lower:]' '[:upper:]' <<<"$last")" \
+             ) \
             -DLLVM_DEFAULT_TARGET_TRIPLE=${{matrix.target}} \
             -DCMAKE_C_COMPILER="${TOOLCHAIN}/bin/cc" \
             -DCMAKE_CXX_COMPILER="${TOOLCHAIN}/bin/c++" \
