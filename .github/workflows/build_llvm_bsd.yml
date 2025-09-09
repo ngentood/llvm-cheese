@@ -227,7 +227,7 @@ jobs:
             -DLLVM_ENABLE_ZLIB=FORCE_ON \
             -DLLVM_ENABLE_ZSTD=FORCE_ON \
             -DLLVM_USE_STATIC_ZSTD=ON \
-            -DLLVM_BUILD_STATIC=OFF \
+            -DLLVM_BUILD_STATIC=ON \
             -DCLANG_ENABLE_ARCMT=OFF \
             -DLLVM_LINK_LLVM_DYLIB=OFF \
             -DLIBCLANG_BUILD_STATIC=ON \
