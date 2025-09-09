@@ -113,9 +113,7 @@ jobs:
           use-cache: false
         
       - name: Setup Zig toolchain
-        run: | 
-          git clone https://github.com/${{ github.repository_owner }}/zig-as-llvm
-          cp -R $ROOTDIR/patches/musl/zig/* $(whereis zig | awk '{print $2}' | xargs dirname)
+        run: git clone https://github.com/${{ github.repository_owner }}/zig-as-llvm
 
       - name: Install dependencies
         run: sudo apt install -y ninja-build
