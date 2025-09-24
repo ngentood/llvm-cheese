@@ -111,7 +111,7 @@ jobs:
       - name: Setup MacOS SDK
         run: |
           cd ${{ github.workspace }}
-          curl -LkSs https://github.com/HomuHomu833/osx-cross-compiler/raw/refs/heads/main/tarballs/MacOSX13.0.sdk.tar.xz | xz -d | tar -x
+          curl -LkSs https://github.com/HomuHomu833/osx-cross-compiler/raw/refs/heads/main/tarballs/MacOSX13.0.sdk.tar.xz | sudo xz -d | sudo tar -x
 
       - name: Build dependencies
         run : |
@@ -119,8 +119,8 @@ jobs:
           MACOSXSDK=${{github.workspace}}/MacOSX13.0.sdk
           export CC=${TOOLCHAIN}/bin/cc
           export CXX=${TOOLCHAIN}/bin/c++
-          export CFLAGS="--sysroot=${MACOSXSDK} -I${MACOSXSDK}/usr/include -I${MACOSXSDK}/usr/lib -fstack-protector-strong -fsanitize=undefined"
-          export CXXFLAGS="--sysroot=${MACOSXSDK} -I${MACOSXSDK}/usr/include -I${MACOSXSDK}/usr/lib -fstack-protector-strong -fsanitize=undefined"
+          export CFLAGS="-isysroot ${MACOSXSDK} -fstack-protector-strong -fsanitize=undefined -mmacosx-version-min=13.0"
+          export CXXFLAGS="-isysroot ${MACOSXSDK} -fstack-protector-strong -fsanitize=undefined -mmacosx-version-min=13.0"
           export LDFLAGS="-F${MACOSXSDK}/System/Library/Frameworks"
           export LD=${TOOLCHAIN}/bin/ld
           export OBJCOPY=${TOOLCHAIN}/bin/objcopy
@@ -219,8 +219,8 @@ jobs:
             -DCMAKE_STRIP="${TOOLCHAIN}/bin/strip" \
             -DCMAKE_OSX_SYSROOT="${MACOSXSDK}" \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
-            -DCMAKE_C_FLAGS="-fstack-protector-strong -fsanitize=undefined" \
-            -DCMAKE_CXX_FLAGS="-fstack-protector-strong -fsanitize=undefined" \
+            -DCMAKE_C_FLAGS="-F${MACOSXSDK}/System/Library/Frameworks -Wno-elaborated-enum-base -fstack-protector-strong -fsanitize=undefined" \
+            -DCMAKE_CXX_FLAGS="-F${MACOSXSDK}/System/Library/Frameworks -Wno-elaborated-enum-base -fstack-protector-strong -fsanitize=undefined" \
             -DLLVM_ENABLE_PROJECTS="${{inputs.projects}}" \
             -DLLVM_ENABLE_ZLIB=FORCE_ON \
             -DLLVM_ENABLE_ZSTD=FORCE_ON \
