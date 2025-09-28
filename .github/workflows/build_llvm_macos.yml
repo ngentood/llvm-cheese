@@ -108,20 +108,14 @@ jobs:
       - name: Setup Zig toolchain
         run: git clone https://github.com/${{ github.repository_owner }}/zig-as-llvm
 
-      - name: Setup MacOS SDK
-        run: |
-          cd ${{ github.workspace }}
-          curl -LkSs https://github.com/HomuHomu833/osx-cross-compiler/raw/refs/heads/main/tarballs/MacOSX13.0.sdk.tar.xz | sudo xz -d | sudo tar -x
-
       - name: Build dependencies
         run : |
           TOOLCHAIN=${PWD}/zig-as-llvm
-          MACOSXSDK=${{github.workspace}}/MacOSX13.0.sdk
           export CC=${TOOLCHAIN}/bin/cc
           export CXX=${TOOLCHAIN}/bin/c++
-          export CFLAGS="-isysroot ${MACOSXSDK} -fstack-protector-strong -fsanitize=undefined -mmacosx-version-min=13.0"
-          export CXXFLAGS="-isysroot ${MACOSXSDK} -fstack-protector-strong -fsanitize=undefined -mmacosx-version-min=13.0"
-          export LDFLAGS="-F${MACOSXSDK}/System/Library/Frameworks"
+          export CFLAGS="-isysroot $(xcrun --show-sdk-path) -fstack-protector-strong -fsanitize=undefined -mmacosx-version-min=13.0"
+          export CXXFLAGS="-isysroot $(xcrun --show-sdk-path) -fstack-protector-strong -fsanitize=undefined -mmacosx-version-min=13.0"
+          export LDFLAGS="-F$(xcrun --show-sdk-path)/System/Library/Frameworks -ObjC"
           export LD=${TOOLCHAIN}/bin/ld
           export OBJCOPY=${TOOLCHAIN}/bin/objcopy
           export AR=${TOOLCHAIN}/bin/ar
@@ -199,15 +193,12 @@ jobs:
       - name: Build LLVM
         run: |
           TOOLCHAIN=${PWD}/zig-as-llvm
-          MACOSXSDK=${{github.workspace}}/MacOSX13.0.sdk
 
           cmake -S "$ROOTDIR/llvm" -B "${TARGET_BUILD_DIR}" -G Ninja \
             -DCMAKE_INSTALL_PREFIX="${ROOTDIR}/llvm-${{matrix.target}}" \
             -DCMAKE_PREFIX_PATH="${TARGET_INSTALL_DIR}" \
             -DLLVM_TARGETS_TO_BUILD="X86;AArch64;ARM;RISCV" \
             -DCMAKE_BUILD_TYPE=MinSizeRel \
-            -DCMAKE_CROSSCOMPILING=True \
-            -DCMAKE_SYSTEM_NAME=Darwin \
             -DLLVM_DEFAULT_TARGET_TRIPLE=${{matrix.target}} \
             -DCMAKE_C_COMPILER="${TOOLCHAIN}/bin/cc" \
             -DCMAKE_CXX_COMPILER="${TOOLCHAIN}/bin/c++" \
@@ -217,10 +208,13 @@ jobs:
             -DCMAKE_AR="${TOOLCHAIN}/bin/ar" \
             -DCMAKE_RANLIB="${TOOLCHAIN}/bin/ranlib" \
             -DCMAKE_STRIP="${TOOLCHAIN}/bin/strip" \
-            -DCMAKE_OSX_SYSROOT="${MACOSXSDK}" \
+            -DCMAKE_CROSSCOMPILING=True \
+            -DCMAKE_SYSTEM_NAME=Darwin \
+            -DCMAKE_OSX_SYSROOT="$(xcrun --show-sdk-path)" \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
-            -DCMAKE_C_FLAGS="-F${MACOSXSDK}/System/Library/Frameworks -Wno-elaborated-enum-base -fstack-protector-strong -fsanitize=undefined" \
-            -DCMAKE_CXX_FLAGS="-F${MACOSXSDK}/System/Library/Frameworks -Wno-elaborated-enum-base -fstack-protector-strong -fsanitize=undefined" \
+            -DCMAKE_OSX_ARCHITECTURES=$([[ "${ZIG_TARGET}" == aarch64* ]] && echo "arm64" || echo "x86_64") \
+            -DCMAKE_C_FLAGS="-F$(xcrun --show-sdk-path)/System/Library/Frameworks -Wno-elaborated-enum-base -fstack-protector-strong -fsanitize=undefined" \
+            -DCMAKE_CXX_FLAGS="-F$(xcrun --show-sdk-path)/System/Library/Frameworks -Wno-elaborated-enum-base -fstack-protector-strong -fsanitize=undefined" \
             -DLLVM_ENABLE_PROJECTS="${{inputs.projects}}" \
             -DLLVM_ENABLE_ZLIB=FORCE_ON \
             -DLLVM_ENABLE_ZSTD=FORCE_ON \
