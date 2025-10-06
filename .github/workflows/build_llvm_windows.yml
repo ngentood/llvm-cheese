@@ -27,7 +27,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [aarch64-windows-gnu, thumb-windows-gnu, x86-windows-gnu, x86_64-windows-gnu]
+        # thumb-windows-gnu
+        target: [aarch64-windows-gnu, x86-windows-gnu, x86_64-windows-gnu]
     runs-on: ubuntu-24.04
     env:
       ROOTDIR: ${{github.workspace}}
