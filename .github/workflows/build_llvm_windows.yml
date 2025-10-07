@@ -114,7 +114,7 @@ jobs:
         run: git clone https://github.com/${{ github.repository_owner }}/zig-as-llvm
 
       - name: Install dependencies
-        run: sudo apt install -y ninja-build
+        run: sudo apt install -y ninja-build lld
 
       - name: Build dependencies
         run : |
