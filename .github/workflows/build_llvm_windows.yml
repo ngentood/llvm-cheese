@@ -104,30 +104,24 @@ jobs:
 
           echo "All patches applied successfully."
 
-      - name: Setup Zig
-        uses: mlugg/setup-zig@v2
-        with:
-          version: "0.16.0-dev.577+c50aa2b95"
-          use-cache: false
-
-      - name: Setup Zig toolchain
-        run: git clone https://github.com/${{ github.repository_owner }}/zig-as-llvm
+      - name: Setup llvm-mingw
+        run: |
+          curl -LkSs https://github.com/mstorsjo/llvm-mingw/releases/download/20250924/llvm-mingw-20250924-ucrt-ubuntu-22.04-x86_64.tar.xz | xz -d | tar -x
+          mv llvm-mingw-20250924-ucrt-ubuntu-22.04-x86_64 llvm-mingw
 
       - name: Install dependencies
         run: sudo apt install -y ninja-build
 
       - name: Build dependencies
         run : |
-          TOOLCHAIN=${PWD}/zig-as-llvm
-          export CC=${TOOLCHAIN}/bin/cc
-          export CXX=${TOOLCHAIN}/bin/c++
-          export CFLAGS="-fsanitize=undefined"
-          export CXXFLAGS="-fsanitize=undefined"
-          export LD=${TOOLCHAIN}/bin/ld
-          export OBJCOPY=${TOOLCHAIN}/bin/objcopy
-          export AR=${TOOLCHAIN}/bin/ar
-          export RANLIB=${TOOLCHAIN}/bin/ranlib
-          export STRIP=${TOOLCHAIN}/bin/strip
+          TOOLCHAIN=${PWD}/llvm-mingw
+          export CC=${TOOLCHAIN}/bin/${{matrix.target}}-clang
+          export CXX=${TOOLCHAIN}/bin/${{matrix.target}}-clang++
+          export LD=${TOOLCHAIN}/bin/${{matrix.target}}-ld
+          export OBJCOPY=${TOOLCHAIN}/bin/${{matrix.target}}-objcopy
+          export AR=${TOOLCHAIN}/bin/${{matrix.target}}-ar
+          export RANLIB=${TOOLCHAIN}/bin/${{matrix.target}}-ranlib
+          export STRIP=${TOOLCHAIN}/bin/${{matrix.target}}-strip
 
           rm -rf build output/ zlib/
 
@@ -152,19 +146,18 @@ jobs:
           cmake -S "zstd/build/cmake" -B "${TARGET_BUILD_DIR}/zstd" -G Ninja \
             -DCMAKE_INSTALL_PREFIX="${TARGET_INSTALL_DIR}" \
             -DCMAKE_BUILD_TYPE=MinSizeRel \
-            -DCMAKE_C_FLAGS="-Wno-error=implicit-function-declaration -fsanitize=undefined -static" \
-            -DCMAKE_CXX_FLAGS="-Wno-error=implicit-function-declaration -fsanitize=undefined -static" \
-            -DCMAKE_EXE_LINKER_FLAGS="-static" \
+            -DCMAKE_C_FLAGS=$CFLAGS \
+            -DCMAKE_CXX_FLAGS=$CXXFLAGS \
             -DCMAKE_CROSSCOMPILING=True \
             -DCMAKE_SYSTEM_NAME=Windows \
-            -DCMAKE_C_COMPILER="${TOOLCHAIN}/bin/cc" \
-            -DCMAKE_CXX_COMPILER="${TOOLCHAIN}/bin/c++" \
-            -DCMAKE_ASM_COMPILER="${TOOLCHAIN}/bin/cc" \
-            -DCMAKE_LINKER="${TOOLCHAIN}/bin/ld" \
-            -DCMAKE_OBJCOPY="${TOOLCHAIN}/bin/objcopy" \
-            -DCMAKE_AR="${TOOLCHAIN}/bin/ar" \
-            -DCMAKE_RANLIB="${TOOLCHAIN}/bin/ranlib" \
-            -DCMAKE_STRIP="${TOOLCHAIN}/bin/strip" \
+            -DCMAKE_C_COMPILER=$CC \
+            -DCMAKE_CXX_COMPILER=$CXX \
+            -DCMAKE_ASM_COMPILER=$CC \
+            -DCMAKE_LINKER=$LD \
+            -DCMAKE_OBJCOPY=$OBJCOPY \
+            -DCMAKE_AR=$AR \
+            -DCMAKE_RANLIB=$RANLIB \
+            -DCMAKE_STRIP=$STRIP \
             -DCMAKE_POLICY_VERSION_MINIMUM=3.5
             cmake --build "${TARGET_BUILD_DIR}/zstd" --target install
 
@@ -180,16 +173,16 @@ jobs:
             -DCMAKE_CROSSCOMPILING=True \
             -DCMAKE_SYSTEM_NAME=Windows \
             -DLLVM_DEFAULT_TARGET_TRIPLE=${{matrix.target}} \
-            -DCMAKE_C_COMPILER="${TOOLCHAIN}/bin/cc" \
-            -DCMAKE_CXX_COMPILER="${TOOLCHAIN}/bin/c++" \
-            -DCMAKE_ASM_COMPILER="${TOOLCHAIN}/bin/cc" \
-            -DCMAKE_LINKER="${TOOLCHAIN}/bin/ld" \
-            -DCMAKE_OBJCOPY="${TOOLCHAIN}/bin/objcopy" \
-            -DCMAKE_AR="${TOOLCHAIN}/bin/ar" \
-            -DCMAKE_RANLIB="${TOOLCHAIN}/bin/ranlib" \
-            -DCMAKE_STRIP="${TOOLCHAIN}/bin/strip" \
-            -DCMAKE_C_FLAGS="-fsanitize=undefined -static" \
-            -DCMAKE_CXX_FLAGS="-fsanitize=undefined -static" \
+            -DCMAKE_C_COMPILER="${TOOLCHAIN}/bin/${{matrix.target}}-clang" \
+            -DCMAKE_CXX_COMPILER="${TOOLCHAIN}/bin/${{matrix.target}}-clang++" \
+            -DCMAKE_ASM_COMPILER="${TOOLCHAIN}/bin/${{matrix.target}}-clang" \
+            -DCMAKE_LINKER="${TOOLCHAIN}/bin/${{matrix.target}}-ld" \
+            -DCMAKE_OBJCOPY="${TOOLCHAIN}/bin/${{matrix.target}}-objcopy" \
+            -DCMAKE_AR="${TOOLCHAIN}/bin/${{matrix.target}}-ar" \
+            -DCMAKE_RANLIB="${TOOLCHAIN}/bin/${{matrix.target}}-ranlib" \
+            -DCMAKE_STRIP="${TOOLCHAIN}/bin/${{matrix.target}}-strip" \
+            -DCMAKE_C_FLAGS="-static" \
+            -DCMAKE_CXX_FLAGS="-static" \
             -DCMAKE_EXE_LINKER_FLAGS="-static" \
             -DLLVM_ENABLE_PROJECTS="${{inputs.projects}}" \
             -DLLVM_ENABLE_ZLIB=FORCE_ON \
