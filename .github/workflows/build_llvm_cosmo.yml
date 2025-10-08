@@ -9,7 +9,7 @@ on:
         required: true
       revision:
         description: "NDK Release revision:"
-        default: '-beta4'
+        default: ''
         required: true
         type: string
       projects:
