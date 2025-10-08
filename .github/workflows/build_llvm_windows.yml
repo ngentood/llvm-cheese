@@ -10,7 +10,7 @@ on:
       revision:
         description: "NDK Release revision:"
         default: ''
-        required: true
+        required: false
         type: string
       projects:
         description: "Projects to build:"
