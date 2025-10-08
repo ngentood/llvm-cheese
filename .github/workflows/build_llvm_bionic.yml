@@ -48,7 +48,7 @@ jobs:
           remove-docker-images: true
 
       - name: Checkout llvm-custom
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: ${{github.workspace}}
 
@@ -210,24 +210,6 @@ jobs:
           ANDROID_NDK_ROOT=$ANDROID_NDK_HOME
           TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64
 
-          case "${{ matrix.target }}" in
-            armv7a-linux-androideabi)
-              ANDROID_ABI=armeabi-v7a
-              ;;
-            aarch64-linux-android)
-              ANDROID_ABI=arm64-v8a
-              ;;
-            i686-linux-android)
-              ANDROID_ABI=x86
-              ;;
-            x86_64-linux-android)
-              ANDROID_ABI=x86_64
-              ;;
-            riscv64-linux-android)
-              ANDROID_ABI=riscv64
-              ;;
-          esac
-
           cmake -S "$ROOTDIR/llvm" -B "${TARGET_BUILD_DIR}" -G Ninja \
             -DCMAKE_INSTALL_PREFIX="${ROOTDIR}/llvm-${{matrix.target}}" \
             -DCMAKE_PREFIX_PATH="${TARGET_INSTALL_DIR}" \
@@ -316,7 +298,7 @@ jobs:
           tar -c ${tarball_name} | xz -T0 -v >${tarball_name}.tar.xz
 
       - name: Upload release
-        uses: ncipollo/release-action@v1.16.0
+        uses: ncipollo/release-action@v1.20.0
         with:
           tag: "llvm-r${{inputs.version}}"
           artifacts: ${{env.tarball_name}}.tar.xz

@@ -43,7 +43,7 @@ jobs:
           remove-docker-images: true
 
       - name: Checkout llvm-custom
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: ${{github.workspace}}
 
@@ -107,7 +107,7 @@ jobs:
           echo "All patches applied successfully."
 
       - name: Setup cosmo toolchain
-        uses: bjia56/setup-cosmocc@v0.0.3
+        uses: bjia56/setup-cosmocc@v0.0.5
         with:
           version: "4.0.2"
 
@@ -266,7 +266,7 @@ jobs:
       - name: Archive
         run: |
           tar -c llvm-${{matrix.target}} >llvm-${{matrix.target}}.tar
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: llvm-${{matrix.target}}
           path: llvm-${{matrix.target}}.tar
@@ -275,7 +275,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           merge-multiple: true
 
@@ -291,7 +291,7 @@ jobs:
           done
 
       - name: Setup cosmo toolchain
-        uses: bjia56/setup-cosmocc@v0.0.3
+        uses: bjia56/setup-cosmocc@v0.0.5
         with:
           version: "4.0.2"
 
@@ -335,7 +335,7 @@ jobs:
           tar -c ${tarball_name} | xz -T0 -v >${tarball_name}.tar.xz
 
       - name: Upload release
-        uses: ncipollo/release-action@v1.16.0
+        uses: ncipollo/release-action@v1.20.0
         with:
           tag: "llvm-r${{inputs.version}}"
           artifacts: ${{env.tarball_name}}.tar.xz

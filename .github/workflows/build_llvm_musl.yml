@@ -48,7 +48,7 @@ jobs:
           remove-docker-images: true
 
       - name: Checkout llvm-custom
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: ${{github.workspace}}
 
@@ -112,7 +112,7 @@ jobs:
           echo "All patches applied successfully."
 
       - name: Setup Zig
-        uses: mlugg/setup-zig@v2
+        uses: mlugg/setup-zig@v2.0.5
         with:
           version: "0.16.0-dev.577+c50aa2b95"
           use-cache: false
@@ -292,7 +292,7 @@ jobs:
           tar -c ${tarball_name} | xz -T0 -v >${tarball_name}.tar.xz
 
       - name: Upload release
-        uses: ncipollo/release-action@v1.16.0
+        uses: ncipollo/release-action@v1.20.0
         with:
           tag: "llvm-r${{inputs.version}}"
           artifacts: ${{env.tarball_name}}.tar.xz
