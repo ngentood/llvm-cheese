@@ -162,7 +162,7 @@ jobs:
 
       - name: Build LLVM
         run: |
-          TOOLCHAIN=${PWD}/zig-as-llvm
+          TOOLCHAIN=${PWD}/llvm-mingw
 
           cmake -S "$ROOTDIR/llvm" -B "${TARGET_BUILD_DIR}" -G Ninja \
             -DCMAKE_INSTALL_PREFIX="${ROOTDIR}/llvm-${{matrix.target}}" \
