@@ -28,13 +28,12 @@ jobs:
       fail-fast: false
       matrix:
         # thumb-windows-gnu
-        target: [aarch64-windows-gnu, x86-windows-gnu, x86_64-windows-gnu]
+        target: [aarch64-w64-mingw32, i686-w64-mingw32, x86_64-w64-mingw32]
     runs-on: ubuntu-24.04
     env:
       ROOTDIR: ${{github.workspace}}
       TARGET_BUILD_DIR: ${{github.workspace}}/build/${{matrix.target}}
       TARGET_INSTALL_DIR: ${{github.workspace}}/output/${{matrix.target}}
-      ZIG_TARGET: ${{matrix.target}}
     steps:
       - name: Maximize build space
         uses: easimon/maximize-build-space@v10
