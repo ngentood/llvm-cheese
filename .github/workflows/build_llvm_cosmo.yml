@@ -266,7 +266,7 @@ jobs:
       - name: Archive
         run: |
           tar -c llvm-${{matrix.target}} >llvm-${{matrix.target}}.tar
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v4.6.2
         with:
           name: llvm-${{matrix.target}}
           path: llvm-${{matrix.target}}.tar
