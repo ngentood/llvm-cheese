@@ -28,7 +28,7 @@ jobs:
       fail-fast: false
       matrix:
         # riscv64-linux-android
-        target: [armv7a-linux-androideabi, aarch64-linux-android, i686-linux-android, x86_64-linux-android]
+        target: [aarch64-linux-android, armv7a-linux-androideabi, i686-linux-android, x86_64-linux-android]
     runs-on: ubuntu-24.04
     env:
       ANDROID_PLATFORM: 25
@@ -122,8 +122,8 @@ jobs:
           TOOLCHAIN=$ROOTDIR/android-ndk-r${{inputs.version}}${{inputs.revision}}/toolchains/llvm/prebuilt/linux-x86_64
           export CC=${TOOLCHAIN}/bin/${{matrix.target}}${ANDROID_PLATFORM}-clang
           export CXX=${TOOLCHAIN}/bin/${{matrix.target}}${ANDROID_PLATFORM}-clang++
-          export CFLAGS="-fstack-protector-strong"
-          export CXXFLAGS="-fstack-protector-strong"
+          export CFLAGS="-fno-sanitize=all"
+          export CXXFLAGS="-fno-sanitize=all"
           export LD=${TOOLCHAIN}/bin/ld
           export OBJCOPY=${TOOLCHAIN}/bin/llvm-objcopy
           export AR=${TOOLCHAIN}/bin/llvm-ar
@@ -226,8 +226,8 @@ jobs:
             -DCMAKE_AR="${TOOLCHAIN}/bin/llvm-ar" \
             -DCMAKE_RANLIB="${TOOLCHAIN}/bin/llvm-ranlib" \
             -DCMAKE_STRIP="${TOOLCHAIN}/bin/llvm-strip" \
-            -DCMAKE_C_FLAGS="-fstack-protector-strong" \
-            -DCMAKE_CXX_FLAGS="-fstack-protector-strong" \
+            -DCMAKE_C_FLAGS="-fno-sanitize=all" \
+            -DCMAKE_CXX_FLAGS="-fno-sanitize=all" \
             -DLLVM_ENABLE_PROJECTS="${{inputs.projects}}" \
             -DLLVM_ENABLE_ZLIB=FORCE_ON \
             -DLLVM_ENABLE_ZSTD=FORCE_ON \
