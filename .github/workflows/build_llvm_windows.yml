@@ -116,8 +116,6 @@ jobs:
           TOOLCHAIN=${PWD}/llvm-mingw
           export CC=${TOOLCHAIN}/bin/${{matrix.target}}-clang
           export CXX=${TOOLCHAIN}/bin/${{matrix.target}}-clang++
-          export CFLAGS="-fno-sanitize=all"
-          export CXXFLAGS="-fno-sanitize=all"
           export LD=${TOOLCHAIN}/bin/${{matrix.target}}-ld
           export OBJCOPY=${TOOLCHAIN}/bin/${{matrix.target}}-objcopy
           export AR=${TOOLCHAIN}/bin/${{matrix.target}}-ar
@@ -184,8 +182,8 @@ jobs:
             -DCMAKE_AR="${TOOLCHAIN}/bin/${{matrix.target}}-ar" \
             -DCMAKE_RANLIB="${TOOLCHAIN}/bin/${{matrix.target}}-ranlib" \
             -DCMAKE_STRIP="${TOOLCHAIN}/bin/${{matrix.target}}-strip" \
-            -DCMAKE_C_FLAGS="-fno-sanitize=all -static" \
-            -DCMAKE_CXX_FLAGS="-fno-sanitize=all -static" \
+            -DCMAKE_C_FLAGS="-static" \
+            -DCMAKE_CXX_FLAGS="-static" \
             -DCMAKE_EXE_LINKER_FLAGS="-static" \
             -DLLVM_ENABLE_PROJECTS="${{inputs.projects}}" \
             -DLLVM_ENABLE_ZLIB=FORCE_ON \

@@ -118,8 +118,6 @@ jobs:
         run : |
           export CC=${{matrix.target}}-cc
           export CXX=${{matrix.target}}-c++
-          export CFLAGS="-fno-sanitize=all"
-          export CXXFLAGS="-fno-sanitize=all"
           export LD=${{matrix.target}}-ld
           export OBJCOPY=${{matrix.target}}-objcopy
           export AR=${{matrix.target}}-ar
@@ -207,8 +205,8 @@ jobs:
             -DCMAKE_ASM_COMPILER="${{matrix.target}}-cc" \
             -DCMAKE_LINKER="${{matrix.target}}-ld" \
             -DCMAKE_OBJCOPY="${{matrix.target}}-objcopy" \
-            -DCMAKE_C_FLAGS="-fno-sanitize=all -static" \
-            -DCMAKE_CXX_FLAGS="-fno-sanitize=all -static" \
+            -DCMAKE_C_FLAGS="-static" \
+            -DCMAKE_CXX_FLAGS="-static" \
             -DCMAKE_EXE_LINKER_FLAGS="-static" \
             -DLLVM_ENABLE_PROJECTS="${{inputs.projects}}" \
             -DLLVM_ENABLE_ZLIB=FORCE_ON \
